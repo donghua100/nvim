@@ -7,7 +7,7 @@ return {
         end
     },
 
-    
+
     -- lualine
     {
         'nvim-lualine/lualine.nvim',
@@ -21,13 +21,12 @@ return {
             },
         },
         config = true,
-        
     },
 
     -- bufferline
     {
-        'akinsho/bufferline.nvim', 
-        dependencies = {'nvim-tree/nvim-web-devicons'}, 
+        'akinsho/bufferline.nvim',
+        dependencies = {'nvim-tree/nvim-web-devicons'},
         opts = {
             options = {
                 offsets = {
@@ -59,6 +58,45 @@ return {
 
     },
 
+    {
+        "echasnovski/mini.indentscope",
+        -- version = false, -- wait till new 0.7.0 release to put it back on semver
+        event = { "BufReadPre", "BufNewFile" },
+        opts = {
+            -- symbol = "▏",
+            symbol = "│",
+            options = { try_as_border = true },
+        },
+        init = function()
+            vim.api.nvim_create_autocmd("FileType", {
+            pattern = {
+                "help",
+                "alpha",
+                "dashboard",
+                "neo-tree",
+                "Trouble",
+                "lazy",
+                "mason",
+                "notify",
+                "toggleterm",
+                "lazyterm",
+            },
+            callback = function()
+                vim.b.miniindentscope_disable = true
+            end,
+            })
+        end,
+    },
 
+    -- which-key
+    {
+        "folke/which-key.nvim",
+        event = "VeryLazy",
+        config = function(_, opts)
+            local wk = require("which-key")
+            wk.setup(opts)
+            wk.register(opts.defaults)
+        end,
+    },
 
 }
