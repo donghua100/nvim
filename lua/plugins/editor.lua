@@ -13,6 +13,8 @@ return {
             { "<leader>e", "<cmd>Neotree toggle<cr>", desc = "NeoTree" },
         },
         init = function()
+            vim.g.loaded_netrw       = 1
+	        vim.g.loaded_netrwPlugin = 1
             if vim.fn.argc() == 1 then
                 local stat = vim.loop.fs_stat(vim.fn.argv(0))
                 if stat and stat.type == "directory" then
@@ -24,7 +26,7 @@ return {
             event_handlers = {
                 {
                     event = "file_opened",
-                    handler = function(file_path)
+                    handler = function()
                         require("neo-tree.command").execute({ action = "close" })
                     end
                 },
@@ -114,5 +116,15 @@ return {
             desc = "Next trouble/quickfix item",
             },
         },
+    },
+
+
+
+    {
+        "rcarriga/nvim-notify",
+        opts = {},
+        init = function()
+            vim.notify = require("notify")
+        end
     },
 }

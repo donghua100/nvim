@@ -30,7 +30,8 @@ return {
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig",
             'folke/neoconf.nvim',
-            'folke/neodev.nvim'
+            'folke/neodev.nvim',
+            "SmiteshP/nvim-navic"
             -- {'williamboman/mason.nvim', dependencies = {'williamboman/mason-lspconfig.nvim'}}
         },
         event = { "BufReadPre", "BufNewFile", "InsertEnter"},
@@ -49,7 +50,11 @@ return {
                 jdtls = {},
                 vimls = {},
             }
-            local on_attach = function(_,bufnr)
+            -- local navic =  require("nvim-navic")
+            local on_attach = function(client,bufnr)
+                -- if client.server_capabilities.documentSymbolProvider then
+                --     navic.attach(client, bufnr)
+                -- end
                 -- vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
                 local nmap = function(keys, func, desc)
                     if desc then
@@ -82,6 +87,47 @@ return {
             require("mason").setup()
             require("neoconf").setup()
             require("neodev").setup()
+            -- navic.setup {
+            --     icons = {
+            --         File          = "󰈙 ",
+            --         Module        = " ",
+            --         Namespace     = "󰌗 ",
+            --         Package       = " ",
+            --         Class         = "󰌗 ",
+            --         Method        = "󰆧 ",
+            --         Property      = " ",
+            --         Field         = " ",
+            --         Constructor   = " ",
+            --         Enum          = "󰕘",
+            --         Interface     = "󰕘",
+            --         Function      = "󰊕 ",
+            --         Variable      = "󰆧 ",
+            --         Constant      = "󰏿 ",
+            --         String        = "󰀬 ",
+            --         Number        = "󰎠 ",
+            --         Boolean       = "◩ ",
+            --         Array         = "󰅪 ",
+            --         Object        = "󰅩 ",
+            --         Key           = "󰌋 ",
+            --         Null          = "󰟢 ",
+            --         EnumMember    = " ",
+            --         Struct        = "󰌗 ",
+            --         Event         = " ",
+            --         Operator      = "󰆕 ",
+            --         TypeParameter = "󰊄 ",
+            --     },
+            --     lsp = {
+            --         auto_attach = false,
+            --         preference = nil,
+            --     },
+            --     highlight = false,
+            --     separator = " > ",
+            --     depth_limit = 0,
+            --     depth_limit_indicator = "..",
+            --     safe_output = true,
+            --     lazy_update_context = false,
+            --     click = false
+            -- }
             -- require'lspconfig'.bashls.setup{}
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
             require("mason-lspconfig").setup({
