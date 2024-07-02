@@ -16,16 +16,21 @@ return {
 	            build = "make install_jsregexp"
             },
             'saadparwaiz1/cmp_luasnip',
+            'onsails/lspkind-nvim',
         },
         config = function()
             local cmp = require'cmp'
             local luasnip = require 'luasnip'
+            local lspkind = require 'lspkind'
             luasnip.config.setup {}
             cmp.setup({
                 snippet = {
                     expand = function(args)
                         luasnip.lsp_expand(args.body)
                     end,
+                },
+                formatting = {
+                    format = lspkind.cmp_format({with_text = true, maxwidth = 50,       ellipsis_char = '...', show_labelDetails = true,})
                 },
                 -- completion = { completeopt = 'menu,menuone,noinsert' },
                 mapping = cmp.mapping.preset.insert({

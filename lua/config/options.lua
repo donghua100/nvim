@@ -59,4 +59,21 @@ opt.pumheight = 10 -- Maximum number of entries in a popup
 opt.scrolloff = 5 -- Lines of context
 opt.sidescrolloff = 10 -- Columns of context
 
+local signs = { Hint = " ", Error = " ", Info = " ", Warn = " ",}
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
 
+vim.diagnostic.config({
+  virtual_text = {
+    prefix = '●',
+  },
+  signs = true,
+  update_in_insert = false,
+  underline = true,
+  severity_sort = true,
+  float = {
+    source = "always",
+  },
+})
