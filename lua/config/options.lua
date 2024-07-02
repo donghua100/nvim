@@ -27,7 +27,7 @@ opt.smartcase = true
 opt.cursorline = true   -- Enable highlighting of the current line
 
 opt.wildmenu = true
-opt.completeopt = "menu,menuone,noselect"
+-- opt.completeopt = "menu,menuone,noselect"
 -- opt.formatoptions = "jcroqlnt"
 
 opt.termguicolors = true  -- True color support
