@@ -69,3 +69,5 @@ map("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
 -- new file
 map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
 
+map('v', 'c', '<Nop>', { noremap = true, silent = true })
+map('v', 'C', '<Nop>', { noremap = true, silent = true })
