@@ -5,8 +5,11 @@ return {
         priority = 1000,
         opts = {},
         config = function()
-            vim.cmd[[colorscheme tokyonight-storm]]
+            vim.cmd[[colorscheme tokyonight-night]]
         end
     },
-    { "catppuccin/nvim", name = "catppuccin"}
+    { "catppuccin/nvim", name = "catppuccin"},
+    { "olimorris/onedarkpro.nvim", },
+    { "loctvl842/monokai-pro.nvim", },
+    { 'crusoexia/vim-monokai'},
 }
