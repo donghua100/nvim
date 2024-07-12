@@ -18,8 +18,8 @@ return {
             },
         },
         keys = {
-            {"<c-h>", '<Cmd>exe v:count1 . "ToggleTerm size=9 direction=horizontal"<CR>', desc = "Open Horizontal Terminal", silent = true, noremap = true},
-            {"<leader>t", '<Cmd>exe v:count1 . "ToggleTerm direction=float"<CR>', desc = "Open Float Terminal", silent = true, noremap = true},
+            {"<leader>th", '<Cmd>exe v:count1 . "ToggleTerm size=9 direction=horizontal"<CR>', desc = "Open Horizontal Terminal", silent = true, noremap = true},
+            {"<leader>tf", '<Cmd>exe v:count1 . "ToggleTerm direction=float"<CR>', desc = "Open Float Terminal", silent = true, noremap = true},
         },
         config = true
     }
