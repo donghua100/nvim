@@ -3,6 +3,7 @@
 # Others
 
 1. zsh
+   
 git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
@@ -13,5 +14,6 @@ Append zsh-autosuggestions & zsh-syntax-highlighting to plugins() like this
 
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
-3. fzf
+2. fzf
+
 source <(fzf --zsh)
