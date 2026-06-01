@@ -1,49 +1,54 @@
 return {
-    {
-        "nvim-treesitter/nvim-treesitter",
+	{
+		"nvim-treesitter/nvim-treesitter",
 
-        build = ":TSUpdate",
+		build = ":TSUpdate",
 
-        event = {
-            "BufReadPost",
-            "BufNewFile",
-        },
+		event = {
+			"BufReadPost",
+			"BufNewFile",
+		},
 
-        opts = {
-            ensure_installed = {
-                "bash",
-                "c",
-                "cpp",
-                "cmake",
-                "lua",
+		opts = {
+			ensure_installed = {
+				"bash",
+				"c",
+				"cpp",
+				"cmake",
+				"lua",
 
-                "python",
-                "rust",
-                "go",
+				"python",
+				"rust",
+				"go",
 
-                "json",
-                "yaml",
-                "toml",
+				"json",
+				"yaml",
+				"toml",
 
-                "markdown",
-                "markdown_inline",
+				"markdown",
+				"markdown_inline",
 
-                "vim",
-                "vimdoc",
-                "query",
-            },
+				"vim",
+				"vimdoc",
+				"query",
+			},
 
-            highlight = {
-                enable = true,
-            },
+			highlight = {
+				enable = true,
+			},
 
-            indent = {
-                enable = true,
-            },
-        },
+			indent = {
+				enable = true,
+				disable = {
+					"c",
+					"cpp",
+					"rust",
+				},
+			},
+		},
 
-        config = function(_, opts)
-            require("nvim-treesitter.configs").setup(opts)
-        end,
-    },
+		config = function(_, opts)
+			require("nvim-treesitter.configs").setup(opts)
+		end,
+	},
 }
