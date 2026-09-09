@@ -33,3 +33,13 @@ ai/
 - deprecated lspconfig setup()
 - monolithic plugin files
 - duplicated keymaps
+
+## 依赖
+- sudo pacman -S tree-sitter-cli
+- a C compiler in your path
+- nodejs
+- fzf
+
+## 坑点
+- treesitter nil
+render-markdown 导致
