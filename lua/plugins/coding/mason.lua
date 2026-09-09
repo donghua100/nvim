@@ -23,6 +23,7 @@ return {
 			ensure_installed = {
 				-- LSP
 				"lua_ls",
+				"jdtls",
 				"clangd",
 				"basedpyright",
 				"rust_analyzer",

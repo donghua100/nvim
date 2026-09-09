@@ -1,31 +1,41 @@
 return {
-    {
-        "stevearc/conform.nvim",
+	{
+		"stevearc/conform.nvim",
 
-        event = {
-            "BufWritePre",
-        },
+		event = {
+			"BufWritePre",
+		},
 
-        opts = {
-            formatters_by_ft = {
-                lua = { "stylua" },
+		opts = {
+			formatters_by_ft = {
+				lua = { "stylua" },
 
-                python = { "black" },
+				python = { "black" },
 
-                c = { "clang-format" },
-                cpp = { "clang-format" },
+				-- JDTLS imports Maven/Gradle project settings and provides Java formatting.
+				java = { lsp_format = "prefer" },
 
-                go = { "gofmt" },
+				c = { "clang-format" },
+				cpp = { "clang-format" },
 
-                rust = { "rustfmt" },
+				go = { "gofmt" },
 
-                sh = { "shfmt" },
-            },
+				rust = { "rustfmt" },
 
-            format_on_save = {
-                timeout_ms = 500,
-                lsp_fallback = true,
-            },
-        },
-    },
+				sh = { "shfmt" },
+			},
+			formatters = {
+				["clang-format"] = {
+					prepend_args = {
+						"--style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never}",
+					},
+				},
+			},
+
+			format_on_save = {
+				timeout_ms = 500,
+				lsp_fallback = true,
+			},
+		},
+	},
 }

@@ -14,6 +14,10 @@ return {
 
 		opts = {
 			render_modes = true,
+			restart_highlighter = false,
+			injections = {
+				enabled = false,
+			},
 
 			heading = {
 				enabled = true,

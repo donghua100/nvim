@@ -31,6 +31,7 @@ return {
 
 				documentation = {
 					auto_show = true,
+					-- treesitter_highlighting = false,
 				},
 			},
 
