@@ -43,3 +43,7 @@ ai/
 ## 坑点
 - treesitter nil
 render-markdown 导致
+- 需要mason
+DAP，Formatter，lint
+- 手动安装
+clang
