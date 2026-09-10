@@ -42,11 +42,7 @@ return {
 					local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
 
 					if lang then
-						local ok = pcall(vim.treesitter.start, args.buf, lang)
-
-						if not ok then
-							return
-						end
+						pcall(vim.treesitter.start, args.buf, lang)
 					end
 				end,
 			})

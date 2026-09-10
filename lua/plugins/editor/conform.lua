@@ -10,10 +10,11 @@ return {
 			formatters_by_ft = {
 				lua = { "stylua" },
 
-				python = { "black" },
+				python = { "ruff_format" },
 
-				-- JDTLS imports Maven/Gradle project settings and provides Java formatting.
-				java = { lsp_format = "prefer" },
+				java = {
+					lsp_format = "prefer",
+				},
 
 				c = { "clang-format" },
 				cpp = { "clang-format" },
@@ -24,6 +25,7 @@ return {
 
 				sh = { "shfmt" },
 			},
+
 			formatters = {
 				["clang-format"] = {
 					prepend_args = {
@@ -34,7 +36,7 @@ return {
 
 			format_on_save = {
 				timeout_ms = 500,
-				lsp_fallback = true,
+				lsp_format = "fallback",
 			},
 		},
 	},

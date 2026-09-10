@@ -979,4 +979,59 @@ lua/plugins/ai/
 > **先把“能写代码 → 能理解代码 → 能检查代码 → 能格式化代码 → 能调试代码 → 能运行代码 → 能管理项目”这一条开发链打通，再做 UI 和 AI。**
 
 你现在已经过了“插件选什么”的阶段，下一阶段应该进入 **“逐个把 IDE 能力跑通”** 的阶段。最合适的下一步就是从 **Treesitter → LSP → Blink/LuaSnip → Conform/Lint** 开始逐项验收，而不是继续增加新插件。
-
+```text
+Java IDE
+│
+├── ① JDTLS 基础能力                         ✅
+│   ├── 启动
+│   ├── Completion
+│   ├── Diagnostic
+│   ├── Definition
+│   ├── References
+│   ├── Hover
+│   ├── Rename
+│   └── Code Action
+│
+├── ② Maven 项目能力
+│   ├── Maven 依赖识别                         ✅
+│   ├── compile                               ✅
+│   ├── test                                  ← 下一步
+│   ├── package
+│   ├── verify
+│   └── clean
+│
+├── ③ Maven 高级项目
+│   ├── dependency:tree
+│   ├── dependency 分析
+│   ├── Maven 生命周期理解
+│   └── 多模块 Maven
+│
+├── ④ Java 重构
+│   ├── Organize Imports
+│   ├── Extract Variable
+│   ├── Extract Method
+│   ├── Extract Constant
+│   └── Move / Rename
+│
+├── ⑤ Java Debug
+│   ├── nvim-dap
+│   ├── java-debug
+│   ├── breakpoint
+│   ├── step
+│   └── variables / watches
+│
+├── ⑥ JUnit
+│   ├── Test class
+│   ├── Test method
+│   ├── Run test
+│   └── Debug test
+│
+└── ⑦ Spring Boot
+    ├── Spring Boot 项目
+    ├── Spring 注解
+    ├── Bean
+    ├── Controller / Service
+    ├── Maven
+    ├── Debug
+    └── JUnit
+```

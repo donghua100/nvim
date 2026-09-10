@@ -1,110 +1,223 @@
-local function java_root(bufnr)
-	local filename = vim.api.nvim_buf_get_name(bufnr)
-	if filename == "" then
-		return vim.uv.cwd()
-	end
-
-	filename = vim.fn.fnamemodify(filename, ":p")
-	return vim.fs.root(filename, {
-		"gradlew",
-		"mvnw",
-		"pom.xml",
-		"build.gradle",
-		"build.gradle.kts",
-		"settings.gradle",
-		"settings.gradle.kts",
-		".git",
-	}) or vim.fs.dirname(filename)
-end
-
-local function java_workspace(root_dir)
-	-- A separate workspace prevents JDTLS indexes and project metadata from leaking
-	-- between unrelated Maven/Gradle projects.
-	local project_name = vim.fn.fnamemodify(root_dir, ":t")
-	local project_id = project_name .. "-" .. vim.fn.sha256(root_dir):sub(1, 10)
-	return vim.fs.joinpath(vim.fn.stdpath("data"), "jdtls-workspaces", project_id)
-end
-
-local function run_project_task(task)
-	local root_dir = java_root(0)
-	if not root_dir then
-		vim.notify("Java project root not found", vim.log.levels.WARN)
-		return
-	end
-
-	local is_maven = vim.uv.fs_stat(vim.fs.joinpath(root_dir, "pom.xml")) ~= nil
-	local executable = is_maven and (vim.uv.fs_stat(vim.fs.joinpath(root_dir, "mvnw")) and "./mvnw" or "mvn")
-		or (vim.uv.fs_stat(vim.fs.joinpath(root_dir, "gradlew")) and "./gradlew" or "gradle")
-	local command = is_maven and (task == "test" and "test" or "package") or (task == "test" and "test" or "build")
-
-	vim.cmd("botright 15split")
-	vim.cmd("terminal cd " .. vim.fn.shellescape(root_dir) .. " && " .. executable .. " " .. command)
-	vim.cmd("startinsert")
-end
-
 return {
 	{
 		"mfussenegger/nvim-jdtls",
 		ft = "java",
+
 		dependencies = {
 			"mason-org/mason.nvim",
 			"saghen/blink.cmp",
 		},
+
 		config = function()
 			local jdtls = require("jdtls")
-			local registry_ok, registry = pcall(require, "mason-registry")
-			local package_ok, jdtls_package = false, nil
-			if registry_ok then
-				package_ok, jdtls_package = pcall(registry.get_package, "jdtls")
+			local mason_registry = require("mason-registry")
+
+			----------------------------------------------------------------
+			-- Maven
+			----------------------------------------------------------------
+
+			local function is_maven_parent(pom_path)
+				local file = io.open(pom_path, "r")
+
+				if not file then
+					return false
+				end
+
+				local content = file:read("*a")
+
+				file:close()
+
+				return content:match("<modules>") ~= nil or content:match("<module>")
 			end
 
-			if not package_ok or not jdtls_package or not jdtls_package:is_installed() then
-				vim.notify("JDTLS is not installed yet. Run :MasonInstall jdtls and reopen this Java file.", vim.log.levels.WARN)
+			local function find_maven_root()
+				local file_path = vim.api.nvim_buf_get_name(0)
+
+				if file_path == "" then
+					return nil
+				end
+
+				local dir = vim.fs.dirname(file_path)
+
+				while dir and dir ~= "" do
+					local pom_path = vim.fs.joinpath(dir, "pom.xml")
+
+					if vim.uv.fs_stat(pom_path) then
+						if is_maven_parent(pom_path) then
+							return dir
+						end
+					end
+
+					local parent = vim.fs.dirname(dir)
+
+					if parent == dir then
+						break
+					end
+
+					dir = parent
+				end
+
+				return vim.fs.root(0, {
+					"pom.xml",
+					"mvnw",
+				})
+			end
+
+			----------------------------------------------------------------
+			-- JDTLS
+			----------------------------------------------------------------
+
+			local jdtls_package = mason_registry.get_package("jdtls")
+
+			if not jdtls_package:is_installed() then
+				vim.notify("jdtls is not installed", vim.log.levels.ERROR)
 				return
 			end
 
-			local jdtls_cmd = vim.fs.joinpath(jdtls_package:get_install_path(), "bin", "jdtls")
-			jdtls.extendedClientCapabilities = vim.tbl_deep_extend(
-				"force",
-				jdtls.extendedClientCapabilities or {},
-				{ classFileContentsSupport = true, resolveAdditionalTextEditsSupport = true }
-			)
+			local jdtls_path = jdtls_package:get_install_path()
+
+			local jdtls_cmd = vim.fs.joinpath(jdtls_path, "bin", "jdtls")
+
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-			local root_dir = java_root(0)
+			local function start_jdtls()
+				if vim.bo.filetype ~= "java" then
+					return
+				end
 
-			jdtls.start_or_attach({
-				cmd = { jdtls_cmd, "-data", java_workspace(root_dir) },
-				root_dir = root_dir,
-				capabilities = capabilities,
-				settings = {
-					java = {
-						eclipse = { downloadSources = true },
-						maven = { downloadSources = true },
-						implementationsCodeLens = { enabled = true },
-						referencesCodeLens = { enabled = true },
-						format = { enabled = true },
+				if #vim.lsp.get_clients({
+					bufnr = 0,
+					name = "jdtls",
+				}) > 0 then
+					return
+				end
+
+				local root_dir = find_maven_root()
+
+				if not root_dir then
+					vim.notify("Java project root not found", vim.log.levels.WARN)
+					return
+				end
+
+				local project_name = vim.fn.fnamemodify(root_dir, ":t")
+
+				local workspace = vim.fs.joinpath(vim.fn.stdpath("data"), "jdtls-workspace", project_name)
+				----------------------------------------------------------------
+				-- Java Debug Adapter
+				----------------------------------------------------------------
+
+				local java_debug_path = mason_registry.get_package("java-debug-adapter"):get_install_path()
+
+				local java_debug_bundle =
+					vim.fn.glob(java_debug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true)
+
+				----------------------------------------------------------------
+				-- JDTLS
+				----------------------------------------------------------------
+				jdtls.start_or_attach({
+					cmd = {
+						jdtls_cmd,
+						"-data",
+						workspace,
 					},
-				},
-				on_attach = function(_, bufnr)
-					local opts = { buffer = bufnr, silent = true }
-					vim.keymap.set("n", "<leader>co", jdtls.organize_imports, vim.tbl_extend("force", opts, { desc = "Organize imports" }))
-					vim.keymap.set("n", "<leader>cv", jdtls.extract_variable, vim.tbl_extend("force", opts, { desc = "Extract variable" }))
-					vim.keymap.set("v", "<leader>cv", function()
-						jdtls.extract_variable(true)
-					end, vim.tbl_extend("force", opts, { desc = "Extract variable" }))
-					vim.keymap.set("v", "<leader>cm", function()
-						jdtls.extract_method(true)
-					end, vim.tbl_extend("force", opts, { desc = "Extract method" }))
-				end,
+
+					root_dir = root_dir,
+
+					capabilities = capabilities,
+					-- java dap
+					init_options = {
+						bundles = {
+							java_debug_bundle,
+						},
+					},
+					{
+						dap = {
+							hotcodereplace = "auto",
+						},
+					},
+				})
+			end
+
+			local jdtls_group = vim.api.nvim_create_augroup("JdtlsAutoStart", {
+				clear = true,
 			})
 
-			vim.api.nvim_create_user_command("JavaBuild", function()
-				run_project_task("build")
-			end, { desc = "Build current Maven or Gradle project" })
-			vim.api.nvim_create_user_command("JavaTest", function()
-				run_project_task("test")
-			end, { desc = "Test current Maven or Gradle project" })
+			vim.api.nvim_create_autocmd("FileType", {
+				group = jdtls_group,
+				pattern = "java",
+				callback = start_jdtls,
+			})
+
+			if vim.bo.filetype == "java" then
+				start_jdtls()
+			end
+
+			----------------------------------------------------------------
+			-- Maven executable
+			----------------------------------------------------------------
+
+			local function get_maven_executable(root_dir)
+				local mvnw = vim.fs.joinpath(root_dir, "mvnw")
+
+				if vim.uv.fs_stat(mvnw) then
+					return "./mvnw"
+				end
+
+				return "mvn"
+			end
+
+			local function run_maven(goal, height)
+				local root_dir = find_maven_root()
+
+				if not root_dir then
+					vim.notify("Maven project root not found", vim.log.levels.WARN)
+					return
+				end
+
+				local executable = get_maven_executable(root_dir)
+
+				vim.cmd("botright " .. height .. "split")
+
+				vim.cmd("terminal cd " .. vim.fn.shellescape(root_dir) .. " && " .. executable .. " " .. goal)
+
+				vim.cmd("startinsert")
+			end
+
+			vim.api.nvim_create_user_command("MavenCompile", function()
+				run_maven("compile", 15)
+			end, {
+				desc = "Maven: compile",
+			})
+
+			vim.api.nvim_create_user_command("MavenTest", function()
+				run_maven("test", 15)
+			end, {
+				desc = "Maven: test",
+			})
+
+			vim.api.nvim_create_user_command("MavenPackage", function()
+				run_maven("package", 15)
+			end, {
+				desc = "Maven: package",
+			})
+
+			vim.api.nvim_create_user_command("MavenVerify", function()
+				run_maven("verify", 15)
+			end, {
+				desc = "Maven: verify",
+			})
+
+			vim.api.nvim_create_user_command("MavenClean", function()
+				run_maven("clean", 15)
+			end, {
+				desc = "Maven: clean",
+			})
+
+			vim.api.nvim_create_user_command("MavenDependencyTree", function()
+				run_maven("dependency:tree", 20)
+			end, {
+				desc = "Maven: dependency tree",
+			})
 		end,
 	},
 }

@@ -39,23 +39,28 @@ return {
 				capabilities = capabilities,
 			})
 
-			vim.lsp.config("rust_analyzer", {
-				capabilities = capabilities,
-			})
-
-			vim.lsp.config("bashls", {
-				capabilities = capabilities,
-			})
+			-- vim.lsp.config("rust_analyzer", {
+			-- 	capabilities = capabilities,
+			-- })
+			--
+			-- vim.lsp.config("bashls", {
+			-- 	capabilities = capabilities,
+			-- })
 
 			-- 注意：一个一个 enable
 			vim.lsp.enable("lua_ls")
 			vim.lsp.enable("clangd")
 			vim.lsp.enable("basedpyright")
-			vim.lsp.enable("rust_analyzer")
-			vim.lsp.enable("bashls")
+			-- vim.lsp.enable("rust_analyzer")
+			-- vim.lsp.enable("bashls")
 
+			-- Diagnostics
 			vim.diagnostic.config({
 				virtual_text = true,
+				signs = true,
+				underline = true,
+				update_in_insert = false,
+				severity_sort = true,
 			})
 
 			vim.api.nvim_create_autocmd("LspAttach", {
@@ -66,13 +71,13 @@ return {
 					}
 
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
 					vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-
+					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 
-					vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+					vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
 				end,
 			})
 		end,

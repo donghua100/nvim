@@ -323,9 +323,9 @@ return {
 
 				-- Python
 				"debugpy",
-			},
 
-			handlers = {},
+				"java-debug-adapter",
+			},
 		},
 	},
 }

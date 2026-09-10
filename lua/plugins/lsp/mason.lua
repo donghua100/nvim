@@ -23,16 +23,16 @@ return {
 			ensure_installed = {
 				-- LSP
 				"lua_ls",
-				"jdtls",
 				"clangd",
 				"basedpyright",
-				"rust_analyzer",
-				"bashls",
-				"jsonls",
-				"yamlls",
+				"jdtls",
+				-- "rust_analyzer",
+				-- "bashls",
+				-- "jsonls",
+				-- "yamlls",
 
 				-- Linter
-				"ruff",
+				-- "ruff",
 			},
 			automatic_enable = false,
 		},
