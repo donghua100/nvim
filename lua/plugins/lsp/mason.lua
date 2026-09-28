@@ -26,6 +26,8 @@ return {
 				"clangd",
 				"basedpyright",
 				"jdtls",
+				"copilot",
+
 				-- "rust_analyzer",
 				-- "bashls",
 				-- "jsonls",

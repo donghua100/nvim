@@ -353,6 +353,14 @@ return {
 				end,
 				desc = "Dim",
 			},
+
+			{
+				"<leader>uC",
+				function()
+					Snacks.picker.colorschemes()
+				end,
+				desc = "Colorschemes",
+			},
 		},
 	},
 }

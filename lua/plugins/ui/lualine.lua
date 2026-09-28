@@ -80,11 +80,18 @@ return {
 							"nvim_diagnostic",
 						},
 
+						-- symbols = {
+						-- 	error = "E ",
+						-- 	warn = "W ",
+						-- 	info = "I ",
+						-- 	hint = "H ",
+						-- },
+
 						symbols = {
-							error = "E ",
-							warn = "W ",
-							info = "I ",
-							hint = "H ",
+							error = "󰅚 ",
+							warn = "󰀪 ",
+							info = "󰋽 ",
+							hint = "󰌶 ",
 						},
 					},
 				},
@@ -134,43 +141,6 @@ return {
 					},
 				},
 			},
-
-			-- =====================================================
-			-- Winbar
-			-- =====================================================
-
-			-- winbar = {
-			--
-			-- 	lualine_c = {
-			-- 		{
-			-- 			function()
-			-- 				local filepath = vim.fn.expand("%:p")
-			--
-			-- 				if filepath == "" then
-			-- 					return ""
-			-- 				end
-			--
-			-- 				local relative = vim.fn.fnamemodify(filepath, ":.")
-			--
-			-- 				return relative:gsub("/", " › ")
-			-- 			end,
-			-- 		},
-			-- 	},
-			--
-			-- 	lualine_x = {
-			-- 		{
-			-- 			function()
-			-- 				local navic = require("nvim-navic")
-			--
-			-- 				if navic.is_available() then
-			-- 					return navic.get_location()
-			-- 				end
-			--
-			-- 				return ""
-			-- 			end,
-			-- 		},
-			-- 	},
-			-- },
 
 			winbar = {
 				lualine_c = {

@@ -5,6 +5,7 @@ return {
 		ft = {
 			"markdown",
 			"codecompanion",
+			"Avante",
 		},
 
 		dependencies = {
@@ -21,6 +22,7 @@ return {
 
 			heading = {
 				enabled = true,
+				sign = true,
 			},
 
 			code = {
@@ -31,6 +33,8 @@ return {
 				width = "block",
 
 				border = "thin",
+
+				position = "left",
 			},
 
 			bullet = {
@@ -38,6 +42,18 @@ return {
 			},
 
 			quote = {
+				enabled = true,
+			},
+
+			checkbox = {
+				enabled = true,
+			},
+
+			pipe_table = {
+				enabled = true,
+			},
+
+			latex = {
 				enabled = true,
 			},
 		},

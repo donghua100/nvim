@@ -39,6 +39,10 @@ return {
 				capabilities = capabilities,
 			})
 
+			vim.lsp.config("copilot", {
+				capabilities = capabilities,
+			})
+
 			-- vim.lsp.config("rust_analyzer", {
 			-- 	capabilities = capabilities,
 			-- })
@@ -51,13 +55,23 @@ return {
 			vim.lsp.enable("lua_ls")
 			vim.lsp.enable("clangd")
 			vim.lsp.enable("basedpyright")
+			vim.lsp.enable("copilot")
 			-- vim.lsp.enable("rust_analyzer")
 			-- vim.lsp.enable("bashls")
 
 			-- Diagnostics
 			vim.diagnostic.config({
 				virtual_text = true,
-				signs = true,
+				-- 在autocmd 设计了全局的，这里防止覆盖
+				-- signs = true,
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = "󰅚",
+						[vim.diagnostic.severity.WARN] = "󰀪",
+						[vim.diagnostic.severity.INFO] = "󰋽",
+						[vim.diagnostic.severity.HINT] = "󰌶",
+					},
+				},
 				underline = true,
 				update_in_insert = false,
 				severity_sort = true,
