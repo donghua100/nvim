@@ -7,6 +7,7 @@ return {
 			"nvim-lua/plenary.nvim",
 			"nvim-treesitter/nvim-treesitter",
 			"ibhagwan/fzf-lua",
+			"j-hui/fidget.nvim",
 		},
 
 		opts = {
@@ -55,7 +56,7 @@ return {
 							url = "https://api.scnet.cn/api/llm/v1/chat/completions",
 							schema = {
 								model = {
-									default = "DeepSeek-V4.1-Flash",
+									default = "DeepSeek-V4.1-Flash-Event",
 								},
 							},
 						})
@@ -66,7 +67,7 @@ return {
 							env = {
 								api_key = "NVIDIA_API_KEY",
 							},
-							url = "https://integrate.api.nvidia.com/v1",
+							url = "https://integrate.api.nvidia.com/v1/chat/completions",
 							schema = {
 								model = {
 									default = "deepseek-ai/deepseek-v4.1-flash",
@@ -79,7 +80,7 @@ return {
 							env = {
 								api_key = "OPENROUTER_API_KEY",
 							},
-							url = "https://openrouter.ai/api/v1/",
+							url = "https://openrouter.ai/api/v1/chat/completions",
 							schema = {
 								model = {
 									default = "nvidia/nemotron-3-ultra-550b-a55b:free",
@@ -93,11 +94,17 @@ return {
 			-- 新版使用 interactions，不再使用 strategies
 			interactions = {
 				chat = {
-					adapter = "scnet_deepseek",
+					adapter = "openrouter",
+					sessions = {
+						enabled = true,
+						autosave = true,
+						continuous_save = true,
+						save_dir = vim.fs.joinpath(vim.fn.stdpath("data"), "codecompanion", "sessions"),
+					},
 				},
 
 				inline = {
-					adapter = "scnet_deepseek",
+					adapter = "openrouter",
 				},
 
 				-- CodeCompanion 的 CLI 交互
@@ -137,6 +144,7 @@ return {
 						width = 0.45,
 						border = "rounded",
 					},
+					intro_message = "AI Assistant",
 				},
 			},
 		},
@@ -183,6 +191,125 @@ return {
 			map("n", "<leader>cx", "<cmd>CodeCompanionCLI agent=opencode<cr>", {
 				desc = "CodeCompanion Codex CLI",
 			})
+
+			-- ============================================================
+			-- CodeCompanion → Fidget
+			-- ============================================================
+
+			local ok, progress = pcall(require, "fidget.progress")
+
+			if not ok then
+				vim.notify("Fidget.nvim is not available", vim.log.levels.WARN)
+				return
+			end
+
+			local spinner_messages = {
+				request = {
+					started = "  Sending...",
+					success = "  Completed",
+					error = "  Failed",
+					cancelled = "󰜺  Cancelled",
+				},
+
+				judge = {
+					started = "  Checking...",
+					success = "󰕥  Checked",
+					error = "󰦞  Check Failed",
+					cancelled = "󰜺  Cancelled",
+				},
+			}
+
+			local function format_adapter(adapter)
+				if not adapter then
+					return "CodeCompanion"
+				end
+
+				if adapter.model and adapter.model ~= "" then
+					return adapter.formatted_name .. " (" .. adapter.model .. ")"
+				end
+
+				return adapter.formatted_name
+			end
+
+			local spinner_events = {
+				{
+					started = "CodeCompanionRequestStarted",
+					finished = "CodeCompanionRequestFinished",
+					messages = spinner_messages.request,
+
+					client_name = function(data)
+						return format_adapter(data.adapter)
+					end,
+				},
+
+				{
+					started = "CodeCompanionToolsJudgeStarted",
+					finished = "CodeCompanionToolsJudgeFinished",
+					messages = spinner_messages.judge,
+
+					client_name = function(data)
+						return data.tool or "CodeCompanion"
+					end,
+				},
+			}
+
+			local handles = {}
+
+			local group = vim.api.nvim_create_augroup("dotfiles.codecompanion.fidget", { clear = true })
+
+			for _, event in ipairs(spinner_events) do
+				vim.api.nvim_create_autocmd("User", {
+					pattern = event.started,
+					group = group,
+
+					callback = function(args)
+						local data = args.data
+
+						if not data or not data.id then
+							return
+						end
+
+						if handles[data.id] then
+							return
+						end
+
+						handles[data.id] = progress.handle.create({
+							title = "",
+							message = event.messages.started,
+
+							lsp_client = {
+								name = event.client_name(data),
+							},
+						})
+					end,
+				})
+
+				vim.api.nvim_create_autocmd("User", {
+					pattern = event.finished,
+					group = group,
+
+					callback = function(args)
+						local data = args.data
+
+						if not data or not data.id then
+							return
+						end
+
+						local handle = handles[data.id]
+						handles[data.id] = nil
+
+						if not handle then
+							return
+						end
+
+						local status = data.status or "cancelled"
+
+						handle.message = event.messages[status] or event.messages.cancelled
+
+						handle:finish()
+					end,
+				})
+			end
 		end,
 	},
 }

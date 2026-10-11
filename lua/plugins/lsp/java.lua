@@ -121,6 +121,11 @@ return {
 						workspace,
 					},
 
+					-- 只为 JDTLS 指定 Java 26，不修改 Neovim 的全局环境
+					cmd_env = {
+						JAVA_HOME = "/usr/lib/jvm/java-26-openjdk",
+						PATH = "/usr/lib/jvm/java-26-openjdk/bin:" .. (vim.env.PATH or ""),
+					},
 					root_dir = root_dir,
 
 					capabilities = capabilities,

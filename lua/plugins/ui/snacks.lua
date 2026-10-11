@@ -95,11 +95,11 @@ return {
 				},
 			},
 
-			explorer = {
-				enabled = true,
-				replace_netrw = true,
-				trash = true,
-			},
+			-- explorer = {
+			-- 	enabled = true,
+			-- 	replace_netrw = true,
+			-- 	trash = true,
+			-- },
 			-- notifier = {
 			-- 	enabled = true,
 			-- 	timeout = 3000,
@@ -146,13 +146,13 @@ return {
 		},
 		keys = {
 			-- Explorer
-			{
-				"<leader>e",
-				function()
-					Snacks.explorer()
-				end,
-				desc = "File Explorer",
-			},
+			-- {
+			-- 	"<leader>e",
+			-- 	function()
+			-- 		Snacks.explorer()
+			-- 	end,
+			-- 	desc = "File Explorer",
+			-- },
 			-- Picker
 			-- Find Files
 			{

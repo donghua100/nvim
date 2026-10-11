@@ -1,37 +1,37 @@
 return {
-    {
-        "akinsho/bufferline.nvim",
+	{
+		"akinsho/bufferline.nvim",
 
-        version = "*",
+		version = "*",
 
-        dependencies = {
-            "nvim-tree/nvim-web-devicons",
-        },
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+		},
 
-        event = "VeryLazy",
+		event = "VeryLazy",
 
-        keys = {
-            { "<S-l>", "<cmd>BufferLineCycleNext<cr>" },
-            { "<S-h>", "<cmd>BufferLineCyclePrev<cr>" },
-        },
+		keys = {
+			{ "<S-l>", "<cmd>BufferLineCycleNext<cr>" },
+			{ "<S-h>", "<cmd>BufferLineCyclePrev<cr>" },
+		},
 
-        opts = {
-            options = {
-                diagnostics = "nvim_lsp",
+		opts = {
+			options = {
+				diagnostics = "nvim_lsp",
 
-                separator_style = "slant",
+				separator_style = "slant",
 
-                always_show_bufferline = true,
+				always_show_bufferline = true,
 
-                offsets = {
-                    {
-                        filetype = "neo-tree",
-                        text = "Explorer",
-                        highlight = "Directory",
-                        text_align = "left",
-                    },
-                },
-            },
-        },
-    },
+				offsets = {
+					{
+						filetype = "neo-tree",
+						text = "Explorer",
+						highlight = "Directory",
+						text_align = "left",
+					},
+				},
+			},
+		},
+	},
 }

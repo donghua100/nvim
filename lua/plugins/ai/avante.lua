@@ -11,6 +11,7 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"MunifTanjim/nui.nvim",
+			{ "ColinKennedy/mega.cmdparse", dependencies = { "ColinKennedy/mega.logging" } },
 			"nvim-tree/nvim-web-devicons",
 			"stevearc/dressing.nvim",
 			"folke/snacks.nvim",
@@ -59,7 +60,7 @@ return {
 
 					api_key_name = "SCNET_API_KEY",
 
-					model = "DeepSeek-V4.1-Flash",
+					model = "DeepSeek-V4.1-Flash-Event",
 
 					timeout = 30000,
 				},
@@ -256,6 +257,9 @@ return {
 
 			vim.api.nvim_create_autocmd("ColorScheme", {
 				callback = set_avante_highlights,
+			})
+			vim.keymap.set("n", "<leader>ah", "<cmd>AvanteHistory<CR>", {
+				desc = "Avante: Chat History",
 			})
 		end,
 	},

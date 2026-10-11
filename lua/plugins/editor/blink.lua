@@ -31,6 +31,9 @@ return {
 				},
 			},
 
+			enabled = function()
+				return not vim.tbl_contains({ "NvimTree", "DressingInput" }, vim.bo.filetype)
+			end,
 			appearance = {
 				use_nvim_cmp_as_default = true,
 				nerd_font_variant = "mono",
